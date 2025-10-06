@@ -1,0 +1,44 @@
+name: Notificar Push a ntfy.sh
+
+# Controla cuándo se ejecuta el workflow
+on:
+  push:
+    branches:
+      - main
+      - master
+  # También puedes usar:
+  # pull_request:
+  # workflow_dispatch:  # Para ejecutar manualmente
+
+# Trabajos que se ejecutarán
+jobs:
+  notificar:
+    runs-on: ubuntu-latest  # Sistema operativo donde se ejecuta
+    
+    steps:
+      # Paso 1: Obtener información del repositorio
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      # Paso 2: Enviar notificación a ntfy.sh
+      - name: Enviar notificación a ntfy.sh
+        run: |
+          curl -H "Title: 🚀 Nuevo Push en GitHub" \
+               -H "Priority: default" \
+               -H "Tags: github,código" \
+               -d "📝 Se actualizó el repositorio ${{ github.repository }}
+          
+          👤 Usuario: ${{ github.actor }}
+          📁 Rama: ${{ github.ref_name }}
+          💬 Mensaje: ${{ github.event.head_commit.message }}
+          🔗 Ver cambios: ${{ github.event.head_commit.url }}" \
+               https://ntfy.sh/devops-itla
+      
+      # Paso 3 (Opcional): Mostrar información en el log
+      - name: Mostrar información del commit
+        run: |
+          echo "Repositorio: ${{ github.repository }}"
+          echo "Usuario: ${{ github.actor }}"
+          echo "Rama: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Mensaje: ${{ github.event.head_commit.message }}"
